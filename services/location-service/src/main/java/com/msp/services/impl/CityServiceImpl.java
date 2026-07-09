@@ -39,7 +39,7 @@ public class CityServiceImpl implements CityService {
         City city = cityRepository.findById(id)
                 .orElseThrow(() -> new Exception("City with the given id does not exist!"));
 
-        if(cityRepository.existsByCityCode(request.getCityCode())){
+        if(cityRepository.existsByCityCodeAndIdNot(request.getCityCode(), id)){
             throw new Exception("City with the given code already exists");
         }
 

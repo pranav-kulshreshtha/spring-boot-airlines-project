@@ -8,8 +8,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
-
-	<artifactId>flight-ops-service</artifactId>
+	<artifactId>pricing-service</artifactId>
 	<name/>
 	<description/>
 

@@ -1,0 +1,103 @@
+package com.msp.services.impl;
+
+import com.msp.enums.FlightStatus;
+import com.msp.mappers.FlightMapper;
+import com.msp.models.Flight;
+import com.msp.payloads.requests.FlightRequest;
+import com.msp.payloads.responses.AircraftResponse;
+import com.msp.payloads.responses.AirlineResponse;
+import com.msp.payloads.responses.AirportResponse;
+import com.msp.payloads.responses.FlightResponse;
+import com.msp.repositories.FlightRepository;
+import com.msp.services.FlightService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+@RequiredArgsConstructor
+@Service
+public class FlightServiceImpl implements FlightService {
+    private final FlightRepository flightRepository;
+
+    @Override
+    public FlightResponse createFlight(Long airlineId, FlightRequest request) throws Exception {
+        if(flightRepository.existsByFlightNumber(request.getFlightNumber())) {
+            throw new Exception("Flight with given number already exists!");
+        }
+        request.setAirlineId(airlineId);
+        Flight flight = FlightMapper.toEntity(request);
+        Flight savedFlight = flightRepository.save(flight);
+        return convertToFlightResponse(savedFlight);
+    }
+
+    @Override
+    public Page<FlightResponse> getFlightsByAirline(Long airlineId, Long departureAirportId, Long arrivalAirportId, Pageable pageable) {
+
+        return flightRepository.findByAirlineId(airlineId,
+                departureAirportId,
+                arrivalAirportId,
+                pageable).map(this::convertToFlightResponse);
+    }
+
+    @Override
+    public FlightResponse getFlightById(Long id) throws Exception {
+        Flight flight = flightRepository.findById(id)
+                .orElseThrow(() -> new Exception("Flight with given id does not exist!"));
+        return convertToFlightResponse(flight);
+    }
+
+    @Override
+    public FlightResponse updateFlight(Long id, FlightRequest flightRequest) throws Exception {
+        Flight existing = flightRepository.findById(id)
+                .orElseThrow(() -> new Exception("Flight with given id does not exist!"));
+
+        if(flightRequest.getFlightNumber()!=null
+            && flightRepository.existsByFlightNumberAndIdNot(
+                flightRequest.getFlightNumber(), id
+        )) {
+            throw new Exception("Flight with given number already exists!");
+        }
+
+        FlightMapper.updateEntity(flightRequest, existing);
+        Flight updated = FlightMapper.toEntity(flightRequest);
+        return convertToFlightResponse(updated);
+    }
+
+    @Override
+    public FlightResponse changeStatus(Long id, FlightStatus status) throws Exception {
+        Flight flight = flightRepository.findById(id)
+                .orElseThrow(() -> new Exception("Flight with given id does not exist!"));
+        flight.setStatus(status);
+        Flight updated = flightRepository.save(flight);
+        return convertToFlightResponse(updated);
+    }
+
+    @Override
+    public void deleteFlight(Long airlineId, Long id) throws Exception {
+        Flight flight = flightRepository.findByAirlineIdAndId(airlineId, id)
+                .orElseThrow(() -> new Exception("Flight with given id does not exist!"));
+        flightRepository.delete(flight);
+    }
+
+    public FlightResponse convertToFlightResponse(Flight flight) {
+        AircraftResponse aircraft = AircraftResponse.builder()
+                .id(flight.getAircraftId())
+                .build();
+        AirlineResponse airline = AirlineResponse.builder()
+                .id(flight.getAirlineId())
+                .build();
+        AirportResponse arrivalAirport = AirportResponse.builder()
+                .id(flight.getArrivalAirportId())
+                .build();
+        AirportResponse departureAirport = AirportResponse.builder()
+                .id(flight.getDepartureAirportId())
+                .build();
+
+        return FlightMapper.toResponse(flight,
+                aircraft,
+                airline,
+                departureAirport,
+                arrivalAirport);
+    }
+}
