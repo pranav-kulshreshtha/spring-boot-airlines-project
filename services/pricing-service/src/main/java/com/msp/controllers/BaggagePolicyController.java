@@ -34,7 +34,7 @@ public class BaggagePolicyController {
         return ResponseEntity.ok(baggagePolicyService.getBaggagePolicyById(id));
     }
 
-    @GetMapping("/{fareId}")
+    @GetMapping("fare/{fareId}")
     public ResponseEntity<BaggagePolicyResponse> getBaggagePolicyByFareId(
             @PathVariable Long fareId
     ) throws Exception {
