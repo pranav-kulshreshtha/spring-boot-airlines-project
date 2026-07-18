@@ -19,7 +19,7 @@ public class CabinClassController {
 
     private final CabinClassService cabinClassService;
 
-    @GetMapping
+    @PostMapping
     public ResponseEntity<CabinClassResponse> createCabinClass(
             @Valid @RequestBody CabinClassRequest cabinClassRequest
             ) throws Exception {

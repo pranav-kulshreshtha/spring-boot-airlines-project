@@ -2,6 +2,7 @@ package com.msp.mappers;
 
 
 import com.msp.models.CabinClass;
+import com.msp.models.SeatMap;
 import com.msp.payloads.requests.CabinClassRequest;
 import com.msp.payloads.responses.CabinClassResponse;
 
@@ -26,7 +27,8 @@ public class CabinClassMapper {
                 .build();
     }
 
-    public static CabinClassResponse toResponse(CabinClass cabinClass) {
+    public static CabinClassResponse toResponse(
+            CabinClass cabinClass, SeatMap seatMap) {
         if (cabinClass == null) {
             return null;
         }
@@ -37,8 +39,7 @@ public class CabinClassMapper {
                 .code(cabinClass.getCode())
                 .description(cabinClass.getDescription())
                 .aircraftId(cabinClass.getAircraftId())
-                // todo : watch seatMap
-//                .seatMap(seatMap != null ? SeatMapMapper.toResponse(seatMap) : null)
+                .seatMap(seatMap != null ? SeatMapMapper.toResponse(seatMap) : null)
                 .displayOrder(cabinClass.getDisplayOrder())
                 .isActive(cabinClass.getIsActive())
                 .isBookable(cabinClass.getIsBookable())

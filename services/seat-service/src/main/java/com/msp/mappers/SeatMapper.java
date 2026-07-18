@@ -49,7 +49,7 @@ public class SeatMapper {
 
                 .isPremiumSeat(seat.getPremiumSuperCharge() != null &&
                         seat.getPremiumSuperCharge() > 0)
-                .isBookable(seat.isBookable())
+//                .isBookable(seat.isBookable())
                 .fullPosition(seat.getFullPosition())
                 .seatCharacteristics(null)
                 .build();

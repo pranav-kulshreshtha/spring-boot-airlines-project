@@ -1,7 +1,6 @@
 package com.msp.payloads.requests;
 
 import com.msp.enums.CabinClassType;
-import com.msp.payloads.responses.SeatMapResponse;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -9,15 +8,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CabinClassRequest {
 
-    @NotBlank(message = "Cabin class name cannot be blank!")
+    @NotNull(message = "Cabin class name cannot be blank!")
     private CabinClassType name;
 
     @NotBlank(message = "Cabin class code cannot be blank!")
