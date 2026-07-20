@@ -1,5 +1,7 @@
 package com.msp.services.impl;
 
+import com.msp.client.AirlineClient;
+import com.msp.client.LocationClient;
 import com.msp.mappers.FlightInstanceMapper;
 import com.msp.models.Flight;
 import com.msp.models.FlightInstance;
@@ -25,6 +27,8 @@ public class FlightInstanceServiceImpl implements FlightInstanceService {
 
     private final FlightRepository flightRepository;
     private final FlightInstanceRepository flightInstanceRepository;
+    private final AirlineClient airlineClient;
+    private final LocationClient locationClient;
 
     @Override
     public FlightInstanceResponse createFlightInstance(Long airlineId, FlightInstanceRequest request) throws Exception {
@@ -32,11 +36,7 @@ public class FlightInstanceServiceImpl implements FlightInstanceService {
         Flight flight = flightRepository.findById(request.getFlightId())
                 .orElseThrow(() -> new Exception("Flight not found!"));
 
-        // todo : service to service communication
-        AircraftResponse aircraft = AircraftResponse.builder()
-                .id(1L)
-                .totalSeats(90)
-                .build();
+        AircraftResponse aircraft = airlineClient.getAircraftById(flight.getAircraftId());
 
         FlightInstance flightInstance = FlightInstanceMapper.toEntity(request, flight);
         flightInstance.setTotalSeats(aircraft.getTotalSeats());
@@ -45,6 +45,7 @@ public class FlightInstanceServiceImpl implements FlightInstanceService {
         FlightInstance saved = flightInstanceRepository.save(flightInstance);
 
         //todo : create seat instances
+         // publish kafka event. seat service consume that and creates seat instance
 
         return convertToFlightInstanceResponse(saved);
     }
@@ -88,18 +89,15 @@ public class FlightInstanceServiceImpl implements FlightInstanceService {
     }
 
     private FlightInstanceResponse convertToFlightInstanceResponse(FlightInstance flightInstance) {
-        AirlineResponse airline = AirlineResponse.builder()
-                .id(flightInstance.getAirlineId())
-                .build();
-        AirportResponse arrivalAirport = AirportResponse.builder()
-                .id(flightInstance.getArrivalAirportId())
-                .build();
-        AirportResponse departureAirport = AirportResponse.builder()
-                .id(flightInstance  .getDepartureAirportId())
-                .build();
-        AircraftResponse aircraft = AircraftResponse.builder()
-                .id(flightInstance.getFlight().getAircraftId())
-                .build();
+        // service to service communication
+        AirlineResponse airline = airlineClient.getAirlineById(
+                flightInstance.getAirlineId());
+        AirportResponse arrivalAirport = locationClient.getAirportById(
+                flightInstance.getArrivalAirportId());
+        AirportResponse departureAirport = locationClient.getAirportById(
+                flightInstance.getDepartureAirportId());
+        AircraftResponse aircraft = airlineClient.getAircraftById(
+                flightInstance.getFlight().getAircraftId());
 
         return FlightInstanceMapper.toResponse(flightInstance,
                 aircraft,

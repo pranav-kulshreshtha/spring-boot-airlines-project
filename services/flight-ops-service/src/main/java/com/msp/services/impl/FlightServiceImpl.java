@@ -1,5 +1,7 @@
 package com.msp.services.impl;
 
+import com.msp.client.AirlineClient;
+import com.msp.client.LocationClient;
 import com.msp.enums.FlightStatus;
 import com.msp.mappers.FlightMapper;
 import com.msp.models.Flight;
@@ -18,7 +20,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class FlightServiceImpl implements FlightService {
+
     private final FlightRepository flightRepository;
+    private final AirlineClient airlineClient;
+    private final LocationClient locationClient;
 
     @Override
     public FlightResponse createFlight(Long airlineId, FlightRequest request) throws Exception {
@@ -81,18 +86,14 @@ public class FlightServiceImpl implements FlightService {
     }
 
     public FlightResponse convertToFlightResponse(Flight flight) {
-        AircraftResponse aircraft = AircraftResponse.builder()
-                .id(flight.getAircraftId())
-                .build();
-        AirlineResponse airline = AirlineResponse.builder()
-                .id(flight.getAirlineId())
-                .build();
-        AirportResponse arrivalAirport = AirportResponse.builder()
-                .id(flight.getArrivalAirportId())
-                .build();
-        AirportResponse departureAirport = AirportResponse.builder()
-                .id(flight.getDepartureAirportId())
-                .build();
+        AircraftResponse aircraft = airlineClient.getAircraftById(
+                flight.getAircraftId());
+        AirlineResponse airline = airlineClient.getAirlineById(
+                flight.getAirlineId());
+        AirportResponse arrivalAirport = locationClient.getAirportById(
+                flight.getArrivalAirportId());
+        AirportResponse departureAirport = locationClient.getAirportById(
+                flight.getDepartureAirportId());
 
         return FlightMapper.toResponse(flight,
                 aircraft,

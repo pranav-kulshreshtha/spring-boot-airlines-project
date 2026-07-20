@@ -42,6 +42,7 @@ public class AirlineMapper {
         if(airline == null)return null;
 
         return AirlineResponse.builder()
+                .id(airline.getId())
                 .iataCode(airline.getIataCode())
                 .icaoCode(airline.getIcaoCode())
                 .name(airline.getName())

@@ -1,5 +1,6 @@
 package com.msp.services.impl;
 
+import com.msp.client.LocationClient;
 import com.msp.enums.FlightStatus;
 import com.msp.mappers.FlightScheduleMapper;
 import com.msp.models.Flight;
@@ -26,6 +27,7 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
     private final FlightRepository flightRepository;
     private final FlightScheduleRepository flightScheduleRepository;
     private final FlightInstanceService flightInstanceService;
+    private final LocationClient locationClient;
 
     @Override
     public FlightScheduleResponse createFlightSchedule(Long airlineId, FlightScheduleRequest request) throws Exception {
@@ -104,13 +106,11 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
     private FlightScheduleResponse convertToFlightScheduleResponse(
             FlightSchedule flightSchedule
     ) {
-        // todo : service to service communication
-        AirportResponse arrivalAirport = AirportResponse.builder()
-                .id(flightSchedule.getArrivalAirportId())
-                .build();
-        AirportResponse departureAirport = AirportResponse.builder()
-                .id(flightSchedule.getDepartureAirportId())
-                .build();
+        //service to service communication
+        AirportResponse arrivalAirport = locationClient.getAirportById(
+                flightSchedule.getArrivalAirportId());
+        AirportResponse departureAirport = locationClient.getAirportById(
+                flightSchedule.getDepartureAirportId());
 
         return FlightScheduleMapper.toResponse(
                 flightSchedule, arrivalAirport, departureAirport
