@@ -1,4 +1,4 @@
 package com.msp.client;
 
-public class AircraftClient {
+public interface AircraftClient {
 }

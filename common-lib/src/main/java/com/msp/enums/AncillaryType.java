@@ -1,4 +1,6 @@
 package com.msp.enums;
 
-public class AncillaryType {
+public enum AncillaryType {
+    BAGGAGE,
+    TRAVEL_PROTECTION
 }

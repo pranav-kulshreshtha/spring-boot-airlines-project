@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AcillaryRequest {
+public class AncillaryRequest {
 
     @NotNull(message = "Ancillary type is required!")
     private AncillaryType type;
@@ -38,5 +38,7 @@ public class AcillaryRequest {
     private AncillaryMetadata metadata;
 
     private Integer displayOrder;
+
+    private Long airlineId;
 
 }
