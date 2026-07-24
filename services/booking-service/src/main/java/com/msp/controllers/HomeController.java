@@ -9,8 +9,8 @@ public class HomeController {
 
     @GetMapping
     public ApiResponse HomeController() {
-        ApiResponse apiResponse = new ApiResponse("Hey, I am the start of the " +
-                "ANCILLARY SERVICE for this Spring Boot Application!");
+        ApiResponse apiResponse = new ApiResponse("Hey, I am the very very VIP " +
+                "BOOKING SERVICE for this Spring Boot Application!");
         return apiResponse;
     }
 

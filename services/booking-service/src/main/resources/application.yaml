@@ -1,0 +1,15 @@
+server:
+  port: 5009
+
+spring:
+  application:
+    name: booking-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/msp_airlines_booking_db
+    username: root
+    password: Pkul@4567
+
+  jpa:
+    hibernate:
+      ddl-auto: update
