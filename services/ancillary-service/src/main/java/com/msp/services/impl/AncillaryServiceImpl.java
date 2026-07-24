@@ -1,10 +1,14 @@
 package com.msp.services.impl;
 
 import com.msp.mapper.AncillaryMapper;
+import com.msp.mapper.InsuranceCoverageMapper;
 import com.msp.models.Ancillary;
+import com.msp.models.InsuranceCoverage;
 import com.msp.payloads.requests.AncillaryRequest;
 import com.msp.payloads.responses.AncillaryResponse;
+import com.msp.payloads.responses.InsuranceCoverageResponse;
 import com.msp.repositories.AncillaryRepository;
+import com.msp.repositories.InsuranceCoverageRepository;
 import com.msp.services.AncillaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +19,7 @@ import java.util.List;
 public class AncillaryServiceImpl implements AncillaryService {
 
     private final AncillaryRepository ancillaryRepository;
+    private final InsuranceCoverageRepository insuranceCoverageRepository;
 
     @Override
     public AncillaryResponse createAncillary(Long airlineId, AncillaryRequest request) {
@@ -38,18 +43,30 @@ public class AncillaryServiceImpl implements AncillaryService {
         Ancillary ancillary = ancillaryRepository.findById(id)
                 .orElseThrow(() -> new Exception("Ancillary with given id not found!"));
 
-        //todo : fetch insurance coverages by ancillary
+        //fetch insurance coverages by ancillary
+        List<InsuranceCoverage> coverages = insuranceCoverageRepository
+                .findByAncillaryId(ancillary.getId());
+        List<InsuranceCoverageResponse> coveragesResponseList = coverages.stream()
+                .map(InsuranceCoverageMapper::toResponse)
+                .toList();
 
-        return AncillaryMapper.toResponse(ancillary, null);
+        return AncillaryMapper.toResponse(ancillary, coveragesResponseList);
     }
 
     @Override
     public List<AncillaryResponse> getByAirlineId(Long airlineId) {
         return  ancillaryRepository.findByAirlineId(airlineId).stream()
                 .map(anc -> {
-                            //todo : fetch insurance coverages by ancillary
-                            return AncillaryMapper
-                                    .toResponse(anc, null);
+                    //fetch insurance coverages by ancillary
+                    List<InsuranceCoverage> coverages = insuranceCoverageRepository
+                            .findByAncillaryId(anc.getId());
+
+                    List<InsuranceCoverageResponse> coveragesResponseList = coverages.stream()
+                            .map(InsuranceCoverageMapper::toResponse)
+                            .toList();
+
+                    return AncillaryMapper
+                                    .toResponse(anc, coveragesResponseList);
                 }).toList();
     }
 
@@ -68,9 +85,14 @@ public class AncillaryServiceImpl implements AncillaryService {
 
         Ancillary updated = ancillaryRepository.save(existing);
 
-        //todo : fetch insurance coverages by ancillary
+        //fetch insurance coverages by ancillary
+        List<InsuranceCoverage> coverages = insuranceCoverageRepository
+                .findByAncillaryId(updated.getId());
+        List<InsuranceCoverageResponse> coveragesResponseList = coverages.stream()
+                .map(InsuranceCoverageMapper::toResponse)
+                .toList();
 
-        return AncillaryMapper.toResponse(existing, null);
+        return AncillaryMapper.toResponse(existing, coveragesResponseList);
     }
 
     @Override

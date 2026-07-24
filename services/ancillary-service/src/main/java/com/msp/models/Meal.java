@@ -16,7 +16,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 @Builder
-@EntityListeners((AuditingEntityListener.class))
+@EntityListeners(AuditingEntityListener.class)
 public class Meal {
 
     @Id
